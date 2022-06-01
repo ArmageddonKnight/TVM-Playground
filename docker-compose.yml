@@ -1,0 +1,18 @@
+version: '2.3'
+
+services:
+    dev:
+        image: tvm:dev
+        build:
+            context: .
+        network_mode: "host"
+        environment:
+            - PYTHONPATH=/mnt/tvm/python/build/lib.linux-x86_64-cpython-38/
+            - LD_LIBRARY_PATH=/mnt/tvm/build
+            - DISPLAY=${DISPLAY}
+        runtime: nvidia
+        volumes:
+            - .:/mnt
+            - "~/.Xauthority:/root/.Xauthority:rw"
+        working_dir: /mnt
+        privileged: true

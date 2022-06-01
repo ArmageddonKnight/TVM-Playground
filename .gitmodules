@@ -1,3 +1,6 @@
 [submodule "tvm"]
 	path = tvm
 	url = https://github.com/ArmageddonKnight/TVM-Playground
+[submodule "quik_fix"]
+	path = quik_fix
+	url = https://github.com/ArmageddonKnight/quik_fix

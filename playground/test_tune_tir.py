@@ -20,11 +20,11 @@ def Dense_2048x768x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
 
 
 @T.prim_func
-def Dense_1920x768x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
-    A = T.match_buffer(a, [1920, 768])
+def Dense_2000x768x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
+    A = T.match_buffer(a, [2000, 768])
     B = T.match_buffer(b, [768, 2304])
-    C = T.match_buffer(c, [1920, 2304])
-    for i, j, k in T.grid(1920, 2304, 768):
+    C = T.match_buffer(c, [2000, 2304])
+    for i, j, k in T.grid(2000, 2304, 768):
         with T.block("update"):
             vi, vj, vk = T.axis.remap("SSR", [i, j, k])
             with T.init():
@@ -80,18 +80,13 @@ def Dense_2048x768x2304(sch):
 
 
 def test_dense_cuda_sample_sched_infer():
-    from sample_sched import Dense_2048x768x2304
-    mod = Parse._mod(Dense_1920x768x2304)
+    from sample_sched import Dense_2048x768x2304_sample_sched
+    mod = Parse._mod(Dense_2000x768x2304)
     tir_sched = Schedule(mod)
-    Dense_2048x768x2304(tir_sched)
+    Dense_2048x768x2304_sample_sched(tir_sched)
 
     if tir_sched is None:
         print("No valid schedule found!")
     else:
         print(tir_sched.mod.script())
-        with open('./tuning_record/sample_sched.py', 'w') as fout:
-            fout.write("""\
-def Dense_2048x768x2304(sch):
-    {}
-""".format(str(tir_sched.trace).replace('\n', '\n    ')))
         print(tvm.lower(tir_sched.mod["main"], []))

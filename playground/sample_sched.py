@@ -1,4 +1,4 @@
-def Dense_2048x768x2304(sch):
+def Dense_2048x768x2304_sample_sched(sch):
     b0 = sch.get_block(name="update", func_name="main")
     b1 = sch.get_block(name="root", func_name="main")
     sch.annotate(block_or_loop=b0, ann_key="meta_schedule.tiling_structure", ann_val="SSSRRSRS")

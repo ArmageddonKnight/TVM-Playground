@@ -71,6 +71,24 @@ def test_dense_cuda_infer():
         print("No valid schedule found!")
     else:
         print(tir_sched.mod.script())
+        with open('sample_sched.py', 'w') as fout:
+            fout.write("""\
+def Dense_2048x768x2304(sch):
+    {}
+""".format(str(tir_sched.trace).replace('\n', '\n    ')))
+        print(tvm.lower(tir_sched.mod["main"], []))
+
+
+def test_dense_cuda_sample_sched_infer():
+    from sample_sched import Dense_2048x768x2304
+    mod = Parse._mod(Dense_1920x768x2304)
+    tir_sched = Schedule(mod)
+    Dense_2048x768x2304(tir_sched)
+
+    if tir_sched is None:
+        print("No valid schedule found!")
+    else:
+        print(tir_sched.mod.script())
         with open('./tuning_record/sample_sched.py', 'w') as fout:
             fout.write("""\
 def Dense_2048x768x2304(sch):

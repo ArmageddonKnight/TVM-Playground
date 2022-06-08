@@ -1,2 +1,6 @@
 # IDE
 .env
+.vscode
+
+# Python
+*.pyc

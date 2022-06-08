@@ -21,21 +21,20 @@ def Dense(a: T.handle, b: T.handle, c: T.handle) -> None:
 
 
 def test_dense_cuda():
-    with tempfile.TemporaryDirectory() as work_dir:
-        tir_sched = tune_tir(
-                        mod=Dense,
-                        target=Target("nvidia/geforce-rtx-3090"),
-                        config=TuneConfig(
-                            strategy="replay_trace",
-                            num_trials_per_iter=32,
-                            max_trials_per_task=32,
-                            max_trials_global=32,
-                        ),
-                        work_dir=work_dir,
-                    )
-        if tir_sched is None:
-            print("No valid schedule found!")
-        else:
-            print(tir_sched.mod.script())
-            print(tir_sched.trace)
-            print(tvm.lower(tir_sched.mod["main"], []))
+    tir_sched = tune_tir(
+                    mod=Dense,
+                    target=Target("nvidia/geforce-rtx-3090"),
+                    config=TuneConfig(
+                        strategy="replay_trace",
+                        num_trials_per_iter=32,
+                        max_trials_per_task=32,
+                        max_trials_global=32,
+                    ),
+                    work_dir="./tuning_record",
+                )
+    if tir_sched is None:
+        print("No valid schedule found!")
+    else:
+        print(tir_sched.mod.script())
+        print(tir_sched.trace)
+        print(tvm.lower(tir_sched.mod["main"], []))

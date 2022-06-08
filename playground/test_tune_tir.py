@@ -17,7 +17,7 @@ def Dense(a: T.handle, b: T.handle, c: T.handle) -> None:
             vi, vj, vk = T.axis.remap("SSR", [i, j, k])
             with T.init():
                 C[vi, vj] = 0.0
-            C[vi, vj] = C[vi, vj] + A[vi, vk] * B[vj, vk]
+            C[vi, vj] = C[vi, vj] + A[vi, vk] * B[vk, vj]
 
 
 def test_dense_cuda():
@@ -28,6 +28,7 @@ def test_dense_cuda():
                         config=TuneConfig(
                             strategy="replay_trace",
                             num_trials_per_iter=32,
+                            max_trials_per_task=32,
                             max_trials_global=32,
                         ),
                         work_dir=work_dir,

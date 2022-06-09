@@ -73,7 +73,7 @@ def test_dense_cuda_infer():
         print(tir_sched.mod.script())
         with open('sample_sched.py', 'w') as fout:
             fout.write("""\
-def Dense_2048x768x2304(sch):
+def Dense_2048x768x2304_sample_sched(sch):
     {}
 """.format(str(tir_sched.trace).replace('\n', '\n    ')))
         print(tvm.lower(tir_sched.mod["main"], []))

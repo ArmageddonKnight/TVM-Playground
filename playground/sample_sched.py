@@ -3,11 +3,28 @@ def Dense_2048x768x2304_sample_sched(sch):
     b1 = sch.get_block(name="root", func_name="main")
     sch.annotate(block_or_loop=b0, ann_key="meta_schedule.tiling_structure", ann_val="SSSRRSRS")
     l2, l3, l4 = sch.get_loops(block=b0)
+    
+    # <DietCode>
+    # v5, v6, v7, v8, v9 = sch.sample_tile(loop=l2, n=5, max_innermost_factor=64,
+    #                                      decision=[None, 1, 16, 8, 1])
+    #                                                ^^^^ Better reserved as None
     v5, v6, v7, v8, v9 = sch.sample_perfect_tile(loop=l2, n=5, max_innermost_factor=64, decision=[16, 1, 16, 8, 1])
+    
     l10, l11, l12, l13, l14 = sch.split(loop=l2, factors=[v5, v6, v7, v8, v9])
+
+    # v15, v16, v17, v18, v19 = sch.sample_tile(loop=l3, n=5, max_innermost_factor=64,
+    #                                           decision=[None, 2, 16, 3, 1])
+    #                                                     ^^^^ Ditto
     v15, v16, v17, v18, v19 = sch.sample_perfect_tile(loop=l3, n=5, max_innermost_factor=64, decision=[24, 2, 16, 3, 1])
+
     l20, l21, l22, l23, l24 = sch.split(loop=l3, factors=[v15, v16, v17, v18, v19])
+
+    # v25, v26, v27 = sch.sample_tile(loop=l4, n=3, max_innermost_factor=64,
+    #                                 decision=[None, 1, 16])
+    #                                           ^^^^ Ditto
     v25, v26, v27 = sch.sample_perfect_tile(loop=l4, n=3, max_innermost_factor=64, decision=[48, 1, 16])
+
+
     l28, l29, l30 = sch.split(loop=l4, factors=[v25, v26, v27])
     sch.reorder(l10, l20, l11, l21, l12, l22, l28, l29, l13, l23, l30, l14, l24)
     l31 = sch.fuse(l10, l20)

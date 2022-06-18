@@ -90,3 +90,7 @@ def test_dense_cuda_sample_sched_infer():
     else:
         print(tir_sched.mod.script())
         print(tvm.lower(tir_sched.mod["main"], []))
+
+
+if __name__ == '__main__':
+    test_dense_cuda_sample_sched_infer()

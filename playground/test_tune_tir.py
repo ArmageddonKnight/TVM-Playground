@@ -20,11 +20,11 @@ def Dense_2048x768x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
 
 
 @T.prim_func
-def Dense_2000x768x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
-    A = T.match_buffer(a, [2000, 768])
-    B = T.match_buffer(b, [768, 2304])
-    C = T.match_buffer(c, [2000, 2304])
-    for i, j, k in T.grid(2000, 2304, 768):
+def Dense_960x770x2304(a: T.handle, b: T.handle, c: T.handle) -> None:
+    A = T.match_buffer(a, [960, 770])
+    B = T.match_buffer(b, [770, 2304])
+    C = T.match_buffer(c, [960, 2304])
+    for i, j, k in T.grid(960, 2304, 770):
         with T.block("update"):
             vi, vj, vk = T.axis.remap("SSR", [i, j, k])
             with T.init():
@@ -81,13 +81,17 @@ def Dense_2048x768x2304_sample_sched(sch):
 
 def test_dense_cuda_sample_sched_infer():
     from sample_sched import Dense_2048x768x2304_sample_sched
-    mod = Parse._mod(Dense_2000x768x2304)
+    from tvm.tir.transform import LocalPad
+
+    mod = Parse._mod(Dense_960x770x2304)
     tir_sched = Schedule(mod)
     Dense_2048x768x2304_sample_sched(tir_sched)
 
     if tir_sched is None:
         print("No valid schedule found!")
     else:
+        print(tir_sched.mod)
+        print(LocalPad()(tir_sched.mod))
         print(tir_sched.mod.script())
         print(tvm.lower(tir_sched.mod["main"], []))
 

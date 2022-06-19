@@ -82,6 +82,7 @@ def Dense_2048x768x2304_sample_sched(sch):
 def test_dense_cuda_sample_sched_infer():
     from sample_sched import Dense_2048x768x2304_sample_sched
     from tvm.tir.transform import LocalPad
+    from tvm.meta_schedule.postproc import RewriteLocalPad
 
     mod = Parse._mod(Dense_960x770x2304)
     tir_sched = Schedule(mod)
@@ -90,8 +91,8 @@ def test_dense_cuda_sample_sched_infer():
     if tir_sched is None:
         print("No valid schedule found!")
     else:
+        RewriteLocalPad().apply(tir_sched)
         print(tir_sched.mod)
-        print(LocalPad()(tir_sched.mod))
         print(tir_sched.mod.script())
         print(tvm.lower(tir_sched.mod["main"], []))
 
